@@ -30,9 +30,17 @@ class CarsTableViewController: UITableViewController {
         super.viewWillAppear(animated)
         loadCars()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let carViewController = segue.destination as? CarViewController,
+        let row = tableView.indexPathForSelectedRow?.row {
+            carViewController.car = cars[row]            
+        }
+    }
         
     private func loadCars() {
-        service.loadCars { result in
+        service.loadCars { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let cars):
                 self.cars = cars
@@ -64,4 +72,23 @@ class CarsTableViewController: UITableViewController {
         cell.detailTextLabel?.text = car.brand
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let car = cars[indexPath.row]
+            service.deleteCar(car: car) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.cars.remove(at: indexPath.row)
+                    DispatchQueue.main.async {
+                        self?.tableView.deleteRows(at: [indexPath], with: .automatic)
+                        self?.tableView.reloadData()
+                    }                    
+                case .failure(let carServiceError):
+                    print(carServiceError.errorMessage)
+                }
+            }
+        }
+    }
+    
 }
