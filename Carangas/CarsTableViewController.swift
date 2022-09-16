@@ -46,7 +46,7 @@ class CarsTableViewController: UITableViewController {
                 self.cars = cars
                 self.reloadCars()
             case .failure(let carServiceError):
-                print(carServiceError.errorMessage)
+                DispatchQueue.main.async { Alert.showError(carServiceError.errorMessage, presenter: self) }
             }
         }
     }
@@ -85,7 +85,7 @@ class CarsTableViewController: UITableViewController {
                         self?.tableView.reloadData()
                     }                    
                 case .failure(let carServiceError):
-                    print(carServiceError.errorMessage)
+                    DispatchQueue.main.async { Alert.showError(carServiceError.errorMessage, presenter: self) }
                 }
             }
         }

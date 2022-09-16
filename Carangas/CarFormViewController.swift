@@ -60,7 +60,7 @@ class CarFormViewController: UIViewController {
                 self.navigationController?.popViewController(animated: true)
             }
         case .failure(let serviceError):
-            print(serviceError.errorMessage)
+            DispatchQueue.main.async { Alert.showError(serviceError.errorMessage, presenter: self) }
         }
     }
 }
