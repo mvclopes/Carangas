@@ -77,12 +77,13 @@ class CarsTableViewController: UITableViewController {
         if editingStyle == .delete {
             let car = cars[indexPath.row]
             service.deleteCar(car: car) { [weak self] result in
+                guard let self = self else { return }
                 switch result {
                 case .success:
-                    self?.cars.remove(at: indexPath.row)
+                    self.cars.remove(at: indexPath.row)
                     DispatchQueue.main.async {
-                        self?.tableView.deleteRows(at: [indexPath], with: .automatic)
-                        self?.tableView.reloadData()
+                        self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                        self.tableView.reloadData()
                     }                    
                 case .failure(let carServiceError):
                     DispatchQueue.main.async { Alert.showError(carServiceError.errorMessage, presenter: self) }
